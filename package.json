@@ -1,0 +1,71 @@
+{
+  "name": "gulp-ruby-sass",
+  "version": "0.7.1",
+  "description": "Compile Sass to CSS with Ruby Sass",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sindresorhus/gulp-ruby-sass"
+  },
+  "maintainers": [
+    {
+      "name": "Sindre Sorhus",
+      "email": "sindresorhus@gmail.com",
+      "url": "http://sindresorhus.com"
+    },
+    {
+      "name": "Rob Wierzbowski",
+      "email": "robwierzbowski@gmail.com",
+      "url": "http://robwierzbowski.com"
+    }
+  ],
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "gulpplugin",
+    "scss",
+    "sass",
+    "css",
+    "compile",
+    "preprocessor",
+    "style",
+    "ruby",
+    "source-map",
+    "source-maps",
+    "sourcemap",
+    "sourcemaps"
+  ],
+  "dependencies": {
+    "chalk": "^0.5.1",
+    "dargs": "^0.1.0",
+    "each-async": "^0.1.3",
+    "glob": "^4.0.2",
+    "gulp-intermediate": "3.0.1",
+    "gulp-util": "^3.0.0",
+    "slash": "^0.1.3",
+    "win-spawn": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.7.0",
+    "gulp-add": "0.0.1",
+    "mocha": "*"
+  },
+  "gitHead": "c60bd30e2a4733ea6e38636afc1f034ba1b1a642",
+  "readme": "# gulp-ruby-sass [![Build Status](https://travis-ci.org/sindresorhus/gulp-ruby-sass.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-ruby-sass)\r\n\r\n> Compile Sass to CSS with [Ruby Sass](http://sass-lang.com/install)\r\n\r\nThis is slower than [gulp-sass](https://github.com/dlmanning/gulp-sass), but more stable and feature-rich.\r\n\r\n*Issues with the output should be reported on the Sass [issue tracker](https://github.com/sass/sass/issues).*\r\n\r\n\r\n## Install\r\n\r\n```sh\r\n$ npm install --save-dev gulp-ruby-sass\r\n```\r\n\r\nYou also need to have [Ruby](http://www.ruby-lang.org/en/downloads/) and [Sass](http://sass-lang.com/download.html) installed. If you're on OS X or Linux you probably already have Ruby; test with `ruby -v` in your terminal. When you've confirmed you have Ruby, run `gem install sass` to install Sass.\r\n\r\n\r\n## Usage\r\n\r\n```js\r\nvar gulp = require('gulp');\r\nvar sass = require('gulp-ruby-sass');\r\n\r\ngulp.task('default', function () {\r\n\treturn gulp.src('src/scss/app.scss', { base: 'src/scss' })\r\n\t\t.pipe(sass({\r\n\t\t\tsourcemap: true,\r\n\t\t\tsourcemapPath: '../scss'\r\n\t\t\tsourcemapBase: 'src/scss'\r\n\t\t}))\r\n\t\t.on('error', function (err) { console.log(err.message); })\r\n\t\t.pipe(gulp.dest('dist/css'));\r\n});\r\n```\r\n\r\nAdd the files you want to compile to `gulp.src()`.\r\n\r\nHandle Sass errors with an `on('error', cb)` listener or a plugin like [plumber](https://github.com/floatdrop/gulp-plumber). gulp-ruby-sass throws errors like a gulp plugin, but also passes the erroring Sass files through the stream if you prefer to see the errors in your browser.\r\n\r\nUse [gulp-watch](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpwatchglob--opts-tasks-or-gulpwatchglob--opts-cb) to automatically recompile your files when you edit them.\r\n\r\n**Note to Windows users:** All Sass options expect unix style path separators (`/`). If you're setting paths dynamically, use [slash](https://github.com/sindresorhus/slash) to normalize them.\r\n\r\n\r\n## API\r\n\r\n### sass(options)\r\n\r\n#### options\r\n\r\n\r\n##### sourcemap\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nEnable Sourcemaps. Requires Sass `3.3.x`.\r\n\r\n**Note:** In order to get functioning sourcemap paths you must add a base option to `gulp.src` to normalize the output file paths:\r\n\r\n```js\r\ngulp.src([\r\n  'app/styles/main.scss',\r\n  'app/styles/mobile/mobile.scss',\r\n  'app/styles/extra/enhancement.scss',\r\n], { base: 'app/styles' })\r\n```\r\n\r\n...and also add values for the [`sourcemapBase`](#sourcemapbase) and [`sourcemapPath`](#sourcemappath) options.\r\n\r\n\r\n##### sourcemapBase\r\n\r\nType: `string`  \r\n\r\nThe path you've added as the `base` option in `gulp.src`.\r\n\r\n\r\n##### sourcemapPath\r\n\r\nType: `string`  \r\n\r\nA relative path from the output CSS directory to the Sass source directory as seen by your web server.\r\n\r\nBecause gulp-ruby-sass can't know your CSS destination directory or your server setup you have to give a little extra information to help the browser find sourcemaps. Examples:\r\n\r\n- If source is `site/scss`, destination is `site/css`, and you're serving from `site`: `{ sourcemapPath: '../scss' }`.\r\n- If source is `app/styles`, destination is `.tmp/styles`, and you're serving both `.tmp` and `app`: `{ sourcemapPath: '.' }`.\r\n\r\n\r\n##### trace\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nShow a full traceback on error.\r\n\r\n\r\n##### unixNewlines\r\n\r\nType: `Boolean`  \r\nDefault: `false` on Windows, otherwise `true`\r\n\r\nUse Unix-style newlines in written files.\r\n\r\n\r\n##### check\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nJust check syntax, don't evaluate.\r\n\r\n\r\n##### style\r\n\r\nType: `String`  \r\nDefault: `nested`\r\n\r\nOutput style. Can be `nested`, `compact`, `compressed`, `expanded`.\r\n\r\n\r\n##### precision\r\n\r\nType: `Number`  \r\nDefault: `3`\r\n\r\nHow many digits of precision to use when outputting decimal numbers.\r\n\r\n\r\n##### quiet\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nSilence warnings and status messages during compilation. **NOTE:** If you set `quiet` to `true` gulp will no longer emit most Sass and Bundler errors.\r\n\r\n\r\n##### compass\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nMake Compass imports available and load project configuration (`config.rb` located close to the `gulpfile.js`).\r\n\r\n\r\n##### debugInfo\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nEmit output that can be used by the FireSass Firebug plugin.\r\n\r\n\r\n##### lineNumbers\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nEmit comments in the generated CSS indicating the corresponding source line.\r\n\r\n\r\n##### loadPath\r\n\r\nType: `String|Array`\r\n\r\nOne or more Sass import paths, relative to the gulpfile.\r\n\r\n\r\n##### require\r\n\r\nType: `String|Array`\r\n\r\nRequire one or more Ruby libraries before running Sass.\r\n\r\n\r\n##### cacheLocation\r\n\r\nType: `String`  \r\nDefault: `.sass-cache`\r\n\r\nThe path to put cached Sass files.\r\n\r\n\r\n##### noCache\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nDon't cache to sassc files.\r\n\r\n\r\n##### bundleExec\r\n\r\nType: `Boolean`  \r\nDefault: `false`\r\n\r\nRun `sass` with [bundle exec](http://gembundler.com/man/bundle-exec.1.html): `bundle exec sass`.\r\n\r\n\r\n##### container\r\n\r\nType: `String`  \r\nDefault: `gulp-ruby-sass`\r\n\r\nName of the temporary directory used to process files. If you have multiple streams with gulp-ruby-sass running at once each will need a unique container name.\r\n\r\n\r\n## License\r\n\r\nMIT © [Sindre Sorhus](http://sindresorhus.com)\r\n",
+  "readmeFilename": "readme.md",
+  "bugs": {
+    "url": "https://github.com/sindresorhus/gulp-ruby-sass/issues"
+  },
+  "homepage": "https://github.com/sindresorhus/gulp-ruby-sass",
+  "_id": "gulp-ruby-sass@0.7.1",
+  "_shasum": "8fe32fca0c555f8c746184d4aefefee3d850447c",
+  "_from": "git://github.com/sindresorhus/gulp-ruby-sass.git#rw/fix-import-sourcemaps",
+  "_resolved": "git://github.com/sindresorhus/gulp-ruby-sass.git#c60bd30e2a4733ea6e38636afc1f034ba1b1a642"
+}
